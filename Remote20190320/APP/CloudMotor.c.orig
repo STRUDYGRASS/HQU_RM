@@ -1,0 +1,73 @@
+#include "CloudMotor.h"
+
+PidTypeDef GMYaw_Speedloop;
+PidTypeDef GMYaw_Positionloop;
+int16_t CloudOut[2];
+
+void CloudMotor_Config(void)
+{
+    static const fp32 YAW_SpeedPID[3]={20,0,0};
+    static const fp32 YAW_PositionPID[3]={1.2,0,15};
+    PID_Init(&GMYaw_Speedloop,PID_POSITION,YAW_SpeedPID,30000,5000);
+    PID_Init(&GMYaw_Positionloop,PID_POSITION,YAW_PositionPID,30000,5000);    
+}
+
+void CloudMotor_Ctrl(void)
+{
+    GMYaw_Speedloop.set=GIMBAL_PID_Calc(&GMYaw_Positionloop,GMYawEncoder.raw_value,GMYaw_Positionloop.set);
+    GMYaw_Speedloop.out=PID_Calc(&GMYaw_Speedloop,GMYawEncoder.filter_rate,GMYaw_Speedloop.set);
+}
+int16_t* CloudMotor_Out(void)//将任务延后到发射任务时发出
+{
+    CloudOut[0] = GMYaw_Speedloop.out;
+    CloudOut[1] = 0;
+    return CloudOut;
+}
+static fp32 GIMBAL_PID_Calc(PidTypeDef *pid, fp32 ref, fp32 set)
+{
+    if (pid == NULL)
+    {
+        return 0.0f;
+    }
+    pid->error[2] = pid->error[1];
+    pid->error[1] = pid->error[0];
+    pid->set = set;
+    pid->fdb = ref;
+    pid->error[0] = set - ref;
+    
+    float raw_err=pid->error[0];
+    if(raw_err>0&&(raw_err)>(8190-raw_err))
+        pid->error[0] = raw_err-8190;
+    else if(raw_err<0&&(-raw_err)>(8190+raw_err))
+        pid->error[0] = 8190+raw_err;
+    else
+        pid->error[0] = raw_err;   
+    
+    if (pid->mode == PID_POSITION)
+    {
+        pid->Pout = pid->Kp * pid->error[0];
+        pid->Iout += pid->Ki * pid->error[0];
+        pid->Dbuf[2] = pid->Dbuf[1];
+        pid->Dbuf[1] = pid->Dbuf[0];
+        pid->Dbuf[0] = (pid->error[0] - pid->error[1]);
+        pid->Dout = pid->Kd * pid->Dbuf[0];
+        pid->Iout = pid->Iout < pid->max_iout ? pid->Iout : pid->max_iout;
+        pid->Iout = pid->Iout > -pid->max_iout ? pid->Iout : -pid->max_iout;
+        pid->out = pid->Pout + pid->Iout + pid->Dout;
+        pid->out = pid->out < pid->max_out ? pid->out : pid->max_out;
+        pid->out = pid->out > -pid->max_out ? pid->out : -pid->max_out;
+    }
+    else if (pid->mode == PID_DELTA)
+    {
+        pid->Pout = pid->Kp * (pid->error[0] - pid->error[1]);
+        pid->Iout = pid->Ki * pid->error[0];
+        pid->Dbuf[2] = pid->Dbuf[1];
+        pid->Dbuf[1] = pid->Dbuf[0];
+        pid->Dbuf[0] = (pid->error[0] - 2.0f * pid->error[1] + pid->error[2]);
+        pid->Dout = pid->Kd * pid->Dbuf[0];
+        pid->out += pid->Pout + pid->Iout + pid->Dout;
+        pid->out = pid->out < pid->max_out ? pid->out : pid->max_out;
+        pid->out = pid->out > -pid->max_out ? pid->out : -pid->max_out;
+    }
+    return pid->out;
+}
