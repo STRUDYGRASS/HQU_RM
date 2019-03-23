@@ -40,7 +40,6 @@
 *.ELF
 *.HEX
 *.H86
-*.LIB
 *.OBJ
 *.O
 *.SBR
