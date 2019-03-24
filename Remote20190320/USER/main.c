@@ -28,6 +28,7 @@
 #include "timer.h"
 #include "fric.h"
 #include "power_ctrl.h "
+#include "adc.h"
 
 #include "Encoder.h"
 #include "Control_Task.h"
@@ -63,6 +64,7 @@ void BSP_init(void)
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4
 
     laser_configuration();
+		voltage_ADC_init();
     
     CAN_Configure();
     Encoder_Start();

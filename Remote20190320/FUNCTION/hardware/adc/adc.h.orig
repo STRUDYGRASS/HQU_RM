@@ -10,7 +10,6 @@
 /****extern void temperature_ADC_init(void);
 extern fp32 get_temprate(void);****/
 
-void voltage_ADC_init(void);
-int get_ADC_ConvertedValue(void);
+
 
 #endif
