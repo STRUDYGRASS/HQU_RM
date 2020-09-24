@@ -1,8 +1,7 @@
 version 1.0
 2018/12/22
-author£º³ÂÐÂÅó
-³ÌÐòËµÃ÷£º
-´®¿Ú
-Ê¹ÓÃµÄ¹Ù·½°åÉÏµÄUSART6´®¿Ú½øÐÐÍ¨Ñ¶£¬Ïò´®¿Ú·¢ËÍÊý×Ö2018
-¶ÔÔ­×ÓSYSTEMÎÄ¼þÖÐµÄusartÎÄ¼þ½øÐÐÁËÐÞ¸Ä£¬½«USART1È«²¿»»ÎªÁËUSART6
-ÈçÐèÓÃµ½UART7¡¢8¿É×ÔÐÐÍØÕ¹
+ç¨‹åºè¯´æ˜Žï¼š
+ä¸²å£
+ä½¿ç”¨çš„å®˜æ–¹æ¿ä¸Šçš„USART6ä¸²å£è¿›è¡Œé€šè®¯ï¼Œå‘ä¸²å£å‘é€æ•°å­—2018
+å¯¹åŽŸå­SYSTEMæ–‡ä»¶ä¸­çš„usartæ–‡ä»¶è¿›è¡Œäº†ä¿®æ”¹ï¼Œå°†USART1å…¨éƒ¨æ¢ä¸ºäº†USART6
+å¦‚éœ€ç”¨åˆ°UART7ã€8å¯è‡ªè¡Œæ‹“å±•
